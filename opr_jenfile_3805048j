@@ -1,0 +1,107 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Opr-S1-3805048j') {
+            steps {
+                script {
+                    echo "Opr-S1-3805048j: Removing old UAT backup image..."
+                    // Command to remove old UAT backup image
+                    echo "Opr-S1-3805048j: Creating new UAT backup image..."
+                    // Command to create new UAT backup image (bkup_uat_image)
+
+                    echo "Opr-S1-3805048j: Updating UAT server..."
+                    sh "bolt script run '/path/to/script_<your polite id>' --targets uat_web_server"
+
+                    echo "Opr-S1-3805048j: UAT web server is backup and updated"
+                }
+            }
+        }
+
+        stage('Opr-S2-3805048j') {
+            steps {
+                script {
+                    echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_web_server/index.html', returnStdout: true).trim()
+
+                    if (curlOutput == '200') {
+                        echo "Opr-S2-3805048j: UAT svr is running after update"
+                    } else {
+                        echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
+                        echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
+                        // Command to rollback UAT web server using bkup_uat_image
+                    }
+                }
+            }
+        }
+
+        stage('Opr-S3-3805048j') {
+            steps {
+                script {
+                    def userInput = input(message: 'Proceed to generate load test report (UAT server is running) or abort (UAT server is rolled back)?', ok: 'Proceed', parameters: [choice(name: 'Proceed', choices: ['Proceed', 'Abort'], description: '')])
+
+                    if (userInput == 'Proceed') {
+                        echo "Opr-S3-3805048j: Proceed to generate load test report for UAT web server"
+                    } else {
+                        echo "Opr-S3-3805048j: Aborting pipeline as UAT server is rolled back"
+                        error("Aborted by user")
+                    }
+                }
+            }
+        }
+
+        stage('Opr-S4-3805048j') {
+            steps {
+                echo "Opr-S4-3805048j: Load test for UAT web server is successful"
+            }
+        }
+
+        stage('Opr-S5-3805048j') {
+            steps {
+                script {
+                    echo "Opr-S5-3805048j: Removing old PROD backup image..."
+                    // Command to remove old PROD backup image
+                    echo "Opr-S5-3805048j: Creating new PROD backup image..."
+                    // Command to create new PROD backup image (bkup_prod_image)
+
+                    echo "Opr-S5-3805048j: Updating PROD server..."
+                    sh "bolt script run '/path/to/script_<your polite id>' --targets prod_web_server"
+
+                    echo "Opr-S5-3805048j: PROD web server is backup and updated"
+                }
+            }
+        }
+
+        stage('Opr-S6-3805048j') {
+            steps {
+                script {
+                    echo "Opr-S6-3805048j: Executing curl test on PROD web server..."
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_web_server/index.html', returnStdout: true).trim()
+
+                    if (curlOutput == '200') {
+                        echo "Opr-S6-3805048j: PROD web svr is running after update"
+                    } else {
+                        echo "Opr-S6-3805048j: PROD web svr fails after update and is rolled back"
+                        echo "Opr-S6-3805048j: Rolling back PROD web server using backup image..."
+                        // Command to rollback PROD web server using bkup_prod_image
+                    }
+                }
+            }
+        }
+
+        stage('Opr-S7-3805048j') {
+            steps {
+                script {
+                    def userInput = input(message: 'Proceed to further system health check or Release PROD web server to production?', ok: 'Proceed', parameters: [choice(name: 'Choice', choices: ['Proceed to further system health check', 'Release to production'], description: '')])
+
+                    if (userInput == 'Proceed to further system health check') {
+                        echo "Opr-S7-3805048j: Proceed to further system health check"
+                        // Commands for further health check (not included in this assignment)
+                    } else {
+                        echo "Opr-S7-3805048j: PROD web server is updated and ready"
+                    }
+                }
+            }
+        }
+    }
+}
