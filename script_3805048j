@@ -10,13 +10,13 @@ tasks:
 
   - name: Clean up and recreate the work directory
     command: |
-      puppet resource file /tmp/<your polite ID>/work ensure=absent
-      puppet resource file /tmp/<your polite ID>/work ensure=directory
+      puppet resource file /tmp/3805048j/work ensure=absent
+      puppet resource file /tmp/3805048j/work ensure=directory
 
   - name: Clone the operate-repo
     command: |
-      git clone https://example.com/operate-repo-<your polite ID>.git /tmp/<your polite ID>/work
+      git clone https://example.com/operate-repo-3805048j.git /tmp/3805048j/work
 
   - name: Replace index.html
     command: |
-      cp /tmp/<your polite ID>/work/new-index.html /var/www/html/index.html
+      cp /tmp/3805048j/work/new-index.html /var/www/html/index.html
