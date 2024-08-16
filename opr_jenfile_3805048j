@@ -22,7 +22,7 @@ pipeline {
                    
 
                     echo "Opr-S1-3805048j: Updating UAT server..."
-                    sh "bolt script run '/path/to/script_<your polite id>' --targets uat_web_server"
+                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets uat_3805048j"
 
                     echo "Opr-S1-3805048j: UAT web server is backup and updated"
                 }
