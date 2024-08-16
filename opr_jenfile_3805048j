@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
-                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_web_server/index.html', returnStdout: true).trim()
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index.html', returnStdout: true).trim()
 
                     if (curlOutput == '200') {
                         echo "Opr-S2-3805048j: UAT svr is running after update"
@@ -41,6 +41,10 @@ pipeline {
                         echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
                         echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
                         // Command to rollback UAT web server using bkup_uat_image
+                        sh 'docker stop uat_3805048j'
+                        sh 'docker run -d --name uat_3805048j --network customnetwork2 --publish 32600:80 --env ENV_VAR=value bkup_uat_image'
+
+
                     }
                 }
             }
@@ -72,11 +76,16 @@ pipeline {
                 script {
                     echo "Opr-S5-3805048j: Removing old PROD backup image..."
                     // Command to remove old PROD backup image
+                    // Ensure Docker is available and running
+                    sh 'docker --version'
+
+                    // Remove the Docker image
+                    sh 'docker rmi bkup_prd_image || true'
                     echo "Opr-S5-3805048j: Creating new PROD backup image..."
                     // Command to create new PROD backup image (bkup_prod_image)
-
+                     sh 'docker commit prod_3805048j bkup_prod_image'
                     echo "Opr-S5-3805048j: Updating PROD server..."
-                    sh "bolt script run '/path/to/script_<your polite id>' --targets prod_web_server"
+                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets prod_3805048j"
 
                     echo "Opr-S5-3805048j: PROD web server is backup and updated"
                 }
@@ -87,7 +96,7 @@ pipeline {
             steps {
                 script {
                     echo "Opr-S6-3805048j: Executing curl test on PROD web server..."
-                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_web_server/index.html', returnStdout: true).trim()
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_3805048j/index.html', returnStdout: true).trim()
 
                     if (curlOutput == '200') {
                         echo "Opr-S6-3805048j: PROD web svr is running after update"
@@ -95,6 +104,9 @@ pipeline {
                         echo "Opr-S6-3805048j: PROD web svr fails after update and is rolled back"
                         echo "Opr-S6-3805048j: Rolling back PROD web server using backup image..."
                         // Command to rollback PROD web server using bkup_prod_image
+                        sh 'docker stop prod_3805048j'
+                        sh 'docker run -d --name prod_3805048j --network customnetwork2 --publish 32700:80 --env ENV_VAR=value bkup_prod_image'
+
                     }
                 }
             }
