@@ -5,10 +5,21 @@ pipeline {
         stage('Opr-S1-3805048j') {
             steps {
                 script {
-                    echo "Opr-S1-3805048j: Removing old UAT backup image..."
+                    
                     // Command to remove old UAT backup image
+                     script {
+                    // Ensure Docker is available and running
+                    sh 'docker --version'
+
+                    // Remove the Docker image
+                    sh 'docker rmi bkup_uat_image || true'
+                    echo "Opr-S1-3805048j: Removing old UAT backup image..."
+                    // Commit the Docker container as an image
+                    sh 'docker commit uat_3805048j bkup_uat_image'
                     echo "Opr-S1-3805048j: Creating new UAT backup image..."
-                    // Command to create new UAT backup image (bkup_uat_image)
+                    
+                    }
+                   
 
                     echo "Opr-S1-3805048j: Updating UAT server..."
                     sh "bolt script run '/path/to/script_<your polite id>' --targets uat_web_server"
