@@ -22,7 +22,7 @@ pipeline {
                    
 
                     echo "Opr-S1-3805048j: Updating UAT server..."
-                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets uat_3805048j"
+                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets uat_3805048j -u clientadm -p user123 --no-host-key-check --run-as root "
 
                     echo "Opr-S1-3805048j: UAT web server is backup and updated"
                 }
@@ -85,7 +85,7 @@ pipeline {
                     // Command to create new PROD backup image (bkup_prod_image)
                      sh 'docker commit prod_3805048j bkup_prod_image'
                     echo "Opr-S5-3805048j: Updating PROD server..."
-                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets prod_3805048j"
+                    sh "bolt script run '/tmp/3805048j/script_3805048j' --targets prod_3805048j -u clientadm -p user123 --no-host-key-check --run-as root"
 
                     echo "Opr-S5-3805048j: PROD web server is backup and updated"
                 }
