@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
-                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index.html', returnStdout: true).trim()
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index_3805048j.html', returnStdout: true).trim()
 
                     if (curlOutput == '200') {
                         echo "Opr-S2-3805048j: UAT svr is running after update"
@@ -96,7 +96,7 @@ pipeline {
             steps {
                 script {
                     echo "Opr-S6-3805048j: Executing curl test on PROD web server..."
-                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_3805048j/index.html', returnStdout: true).trim()
+                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_3805048j/index_3805048j.html', returnStdout: true).trim()
 
                     if (curlOutput == '200') {
                         echo "Opr-S6-3805048j: PROD web svr is running after update"
