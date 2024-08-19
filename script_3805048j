@@ -1,22 +1,17 @@
-targets:
-  - uat_3805048j
-  - prod_3805048j
+apt-get update
+  
+puppet resource package git ensure=present
 
-tasks:
-  - name: Ensure Apache2 is installed and running
-    command: |
-      puppet resource package apache2 ensure=installed
-      puppet resource service apache2 ensure=running
+puppet resource package apache2 ensure=present
 
-  - name: Clean up and recreate the work directory
-    command: |
-      puppet resource file /tmp/3805048j/work ensure=absent
-      puppet resource file /tmp/3805048j/work ensure=directory
+puppet resource service apache2 ensure=running
 
-  - name: Clone the operate-repo
-    command: |
-      git clone https://example.com/operate-repo-3805048j.git /tmp/3805048j/work
+puppet resource file /tmp/3805048j/work ensure=absent force=true
 
-  - name: Replace index.html
-    command: |
-      cp /tmp/3805048j/work/new-index.html /var/www/html/index.html
+puppet resource file /tmp/3805048j/work ensure=directory
+
+cd /tmp/3805048j/work
+
+git clone https://github.com/dtkyen262/operate-repo-3805048j.git /tmp/3805048j/work
+
+cp -p /tmp/3805048j/work/index_3805048j.html /var/www/html
