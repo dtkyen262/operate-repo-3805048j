@@ -34,8 +34,8 @@ pipeline {
                 script {
                     echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
                     def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index_3805048j.html', returnStdout: true).trim()
-
-                    if (curlOutput == '200') {
+                    echo "The value of MY_VARIABLE is: ${env.curlOutput}"
+                    if (curlOutput == 200) {
                         echo "Opr-S2-3805048j: UAT svr is running after update"
                     } else {
                         echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
