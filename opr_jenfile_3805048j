@@ -36,9 +36,9 @@ pipeline {
             
             // Run the curl command and capture the HTTP status code
            // def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index_3805048j.html', returnStdout: true).trim()
-            int status = sh(script: "curl -sLI -w '%{http_code}' http://uat_3805048j/index_3805048j.html -o /dev/null", returnStdout: true)
+            def status = sh(script: "curl -sLI -w '%{http_code}' http://uat_3805048j/index_3805048j.html -o /dev/null", returnStdout: true)
 
-            if (status != 200 && status != 201) {
+            if (status != '200' && status != '201') {
                 echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
                 echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
                 // Command to rollback UAT web server using bkup_uat_image
