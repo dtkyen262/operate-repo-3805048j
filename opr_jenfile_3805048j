@@ -44,14 +44,15 @@ pipeline {
                     def uatResult = sh(script: "cat ${uatResultFile}", returnStdout: true).trim()
                     
                     if (uatResult != "HTTP/1.1 200 OK") {
-                         echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
+                             echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
                 	     echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
                 	     // Command to rollback UAT web server using bkup_uat_image
                	 	     sh 'docker stop uat_3805048j'
                 	     sh 'docker run -d --name uat_3805048j --network customnetwork2 --publish 32600:80 --env ENV_VAR=value bkup_uat_image'
-			             error "UAT Web Test Failed: ${uatResult}"
+			     error "UAT Web Test Failed: ${uatResult}"
 			
-                    } else {
+                    } 
+		    else {
                          echo "Opr-S2-3805048j: UAT svr is running after update"}"
                     }
                 }
