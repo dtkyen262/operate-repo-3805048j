@@ -53,7 +53,8 @@ pipeline {
 			
                     } 
 		    else {
-                         echo "Opr-S2-3805048j: UAT svr is running after update"}"
+                         echo "Opr-S2-3805048j: UAT svr is running after update"
+                    }
                     }
                 }
        
