@@ -30,9 +30,9 @@ pipeline {
         }
 
        stage('Opr-S2-3805048j') {
-       steps {
-             script {
-		            echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
+          steps {
+               script {
+		    echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
                     // Define the UAT URL and result file path
                     def uatUrl = "http://uat_3805048j/index_3805048j.html "
                     def uatResultFile = "/tmp/uat-result-file"
