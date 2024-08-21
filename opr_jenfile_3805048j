@@ -107,18 +107,28 @@ pipeline {
         stage('Opr-S6-3805048j') {
             steps {
                 script {
-                    echo "Opr-S6-3805048j: Executing curl test on PROD web server..."
-                    def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://prod_3805048j/index_3805048j.html', returnStdout: true).trim()
+                     echo "Opr-S6-3805048j: Executing curl test on PROD web server..."
+                    
+                    def prodUrl = "http://prod_3805048j/index_3805048j.html "
+                    def prodResultFile = "/tmp/prod-result-file"
+                    
+                    // Perform the web test
+                    sh "curl -Is ${prodUrl} | head -n 1 > ${prodResultFile}"
+                    
+                    // Check the result
+                    def prodResult = sh(script: "cat ${prodResultFile}", returnStdout: true).trim()
+                    
+                    if (prodResult != "HTTP/1.1 200 OK") {
+                             echo "Opr-S6-3805048j: PROD web svr fails after update and is rolled back"
+                             echo "Opr-S6-3805048j: Rolling back PROD web server using backup image..."
+               	 	     sh 'docker stop prod_3805048j'
+                             sh 'docker rm prod_3805048j'
+                	     sh 'docker run -d --name prod_3805048j --network customnetwork2 --publish 32700:80 --env ENV_VAR=value bkup_prod_image'
 
-                    if (curlOutput == '200') {
+			
+                    } 
+		    else {
                         echo "Opr-S6-3805048j: PROD web svr is running after update"
-                    } else {
-                        echo "Opr-S6-3805048j: PROD web svr fails after update and is rolled back"
-                        echo "Opr-S6-3805048j: Rolling back PROD web server using backup image..."
-                        // Command to rollback PROD web server using bkup_prod_image
-                        sh 'docker stop prod_3805048j'
-                        sh 'docker run -d --name prod_3805048j --network customnetwork2 --publish 32700:80 --env ENV_VAR=value bkup_prod_image'
-
                     }
                 }
             }
