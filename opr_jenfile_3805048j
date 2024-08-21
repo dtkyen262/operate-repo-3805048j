@@ -31,27 +31,31 @@ pipeline {
 
        stage('Opr-S2-3805048j') {
        steps {
-        script {
-            echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
-            
-            // Run the curl command and capture the HTTP status code
-           // def curlOutput = sh(script: 'curl -s -o /dev/null -w "%{http_code}" http://uat_3805048j/index_3805048j.html', returnStdout: true).trim()
-            def status = sh(script: "curl -sLI -w '%{http_code}' http://uat_3805048j/index_3805048j.html -o /dev/null", returnStdout: true)
-
-            if (status != '200' && status != '201') {
-                echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
-                echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
-                // Command to rollback UAT web server using bkup_uat_image
-                sh 'docker stop uat_3805048j'
-                sh 'docker run -d --name uat_3805048j --network customnetwork2 --publish 32600:80 --env ENV_VAR=value bkup_uat_image'
-            }
-            else{
-                    echo "Opr-S2-3805048j: UAT svr is running after update"
-            }
-
-          
-        }
-       }
+             script {
+		            echo "Opr-S2-3805048j: Executing curl test on UAT web server..."
+                    // Define the UAT URL and result file path
+                    def uatUrl = "http://uat_3805048j/index_3805048j.html "
+                    def uatResultFile = "/tmp/uat-result-file"
+                    
+                    // Perform the web test
+                    sh "curl -Is ${uatUrl} | head -n 1 > ${uatResultFile}"
+                    
+                    // Check the result
+                    def uatResult = sh(script: "cat ${uatResultFile}", returnStdout: true).trim()
+                    
+                    if (uatResult != "HTTP/1.1 200 OK") {
+                         echo "Opr-S2-3805048j: UAT svr fails after update and is rolled back"
+                	     echo "Opr-S2-3805048j: Rolling back UAT web server using backup image..."
+                	     // Command to rollback UAT web server using bkup_uat_image
+               	 	     sh 'docker stop uat_3805048j'
+                	     sh 'docker run -d --name uat_3805048j --network customnetwork2 --publish 32600:80 --env ENV_VAR=value bkup_uat_image'
+			             error "UAT Web Test Failed: ${uatResult}"
+			
+                    } else {
+                         echo "Opr-S2-3805048j: UAT svr is running after update"}"
+                    }
+                }
+       
       }
 
 
